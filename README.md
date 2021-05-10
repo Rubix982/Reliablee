@@ -55,5 +55,11 @@ We can now thus,
 
 ## Reference
 
-- What's in a TCP Segment Header, anyway? Explanation from [OmniSecu](https://www.omnisecu.com/tcpip/tcp-header.php)
-- Representing UTF-8 charaters, [StackOverflow - How many characters can UTF-8 encode?](https://stackoverflow.com/questions/10229156/how-many-characters-can-utf-8-encode)
+- [OmniSecu - Transmission Control Protocol (TCP) Segment Header, Transmission Control Protocol, TCP Header Fields](https://www.omnisecu.com/tcpip/tcp-header.php)
+- [StackOverflow - How many characters can UTF-8 encode?](https://stackoverflow.com/questions/10229156/how-many-characters-can-utf-8-encode)
+- [RealPython - Python Sockets](https://realpython.com/python-sockets/)
+- [GitHub, sgtb3 - Reliable Data Transfer Protocol](https://github.com/sgtb3/Reliable-Data-Transfer-Protocol)
+- [Github, Khouderchah Alex - libRDT ](https://github.com/Khouderchah-Alex/libRDT)
+- [YouTube, Ben Eater - TCP Connection Walkthrough](https://www.youtube.com/watch?v=F27PLin3TV0)
+- [Python Docs - Socket Programming](https://docs.python.org/3/library/socket.html#socket.socket.settimeout)
+
