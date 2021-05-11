@@ -10,7 +10,7 @@ Using `Pipenv`,
 pipenv shell
 ```
 
-Updating `Pipfile`,
+Updating `Pipfile` from a possible `requirements.txt`,
 
 ```bash
 pipenv install -r requirements.txt
@@ -26,6 +26,21 @@ Installing a package,
 
 ```bash
 pipenv install [package_name]
+```
+
+## To Start
+
+After doing,
+
+```bash
+pipenv shell && pipenv install
+pipenv install --dev // if you would like to do development
+```
+
+Then just simply run,
+
+```bash
+python app.py
 ```
 
 ## Brainstorming
