@@ -56,10 +56,10 @@ class TCPPacket:
         '''Initializes packet with default configuration for the client from the dotenv file'''
         
         '''Cient source port'''
-        self.source_port = AuxProcessing.IntegersToBinary(int(os.environ['CLIENT_SENDER_PORT']))
+        self.source_port = AuxProcessing.IntegersToBinary(int(os.environ['SENDER_SENDER_PORT']))
 
         '''Destination port for the TCP Packet from the client - the server'''
-        self.destination_port = AuxProcessing.IntegersToBinary(int(os.environ['SERVER_RECEIVER_PORT']))
+        self.destination_port = AuxProcessing.IntegersToBinary(int(os.environ['RECEIVER_RECEIVER_PORT']))
 
         '''Setting the sequence number to start from 0'''
         self.sequence_number = AuxProcessing.IntegersToBinary(0)
@@ -104,10 +104,10 @@ class TCPPacket:
         '''Initializes packet with default configuration for the server from the dotenv file'''
         
         '''Cient source port'''
-        self.source_port = AuxProcessing.IntegersToBinary(int(os.environ['SERVER_SENDER_PORT']))
+        self.source_port = AuxProcessing.IntegersToBinary(int(os.environ['RECEIVER_SENDER_PORT']))
 
         '''Destination port for the TCP Packet from the client - the server'''
-        self.destination_port = AuxProcessing.IntegersToBinary(int(os.environ['CLIENT_RECEIVER_PORT']))
+        self.destination_port = AuxProcessing.IntegersToBinary(int(os.environ['SENDER_RECEIVER_PORT']))
 
         '''Setting the sequence number to start from 0'''
         self.sequence_number = AuxProcessing.IntegersToBinary(0)
