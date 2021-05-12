@@ -141,6 +141,21 @@ The above idea isn't bad, but true multithreading is not possible in Python. It'
 
 ### RDT3.0 Data Loss
 
+For context, take a look at `3.png`, `4.png` for the intent of doing only one TCP method at a single moment.
+
+For the multipipelined approach to handling data loss, consider the `5.png`, `6.png`, `8.png`, `9.png`.
+
+1. Considering the *only one TCP* at a single moment idea. Either it's,
+   1. No loss
+      1. We just dealt with it when we made a simple TCP Sender And Mechanism
+   2. Packet Loss
+      1. The only participant involved in this case is the Sender itself, which has an internal built in time for how long the packet has been out, and how long it should take for it to receive a response from the Receiver.
+      2. In essence, all this is doing is starting a timer right after it **sends** the packet. It keeps checking if the timer has not exceeded some **fixed time out**. If it does, just send the packet again
+   3. ACK Loss
+      1. Two participants, but the catch 22 is that the receiver has no mechanism that says they should receive a packet within this time duration, thus all that in done in this scenario is again at the `Sender's` end, which is just resending the *pkt* if no *ACK* has been received for the last packet sent in a certain time duration
+   4. Premature Timeout/Delayed ACK
+      1. This needs an algorithm implementation. Time to study more.
+
 ## Reference
 
 - [OmniSecu - Transmission Control Protocol (TCP) Segment Header, Transmission Control Protocol, TCP Header Fields](https://www.omnisecu.com/tcpip/tcp-header.php)
@@ -159,3 +174,4 @@ The above idea isn't bad, but true multithreading is not possible in Python. It'
 - [Pypi, pipenv](https://pypi.org/project/pipenv/)
 - [Docs Python, OpenSSL - Self-signed Certificates](https://docs.python.org/3.6/library/ssl.html#self-signed-certificates)
 - [WhyNoHTTPS](https://whynohttps.com/)
+- [GitHub, yh742 - Go Back N](https://github.com/yh742/go-back-n/)
