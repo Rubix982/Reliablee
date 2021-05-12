@@ -4,6 +4,7 @@ import os
 
 load_dotenv()
 
+
 def RemoveBlacklistController():
     with open(str(os.environ['BLACKLIST_LOCATION']), mode='a') as file:
         new_domain_to_remove_from_blacklist = str(
@@ -19,4 +20,4 @@ def RemoveBlacklistController():
 
     with open('blacklist.txt', mode='w') as file:
         for domain in final_domains:
-            file.writeline(f"{domain},\n")    
+            file.writeline(f"{domain},\n")

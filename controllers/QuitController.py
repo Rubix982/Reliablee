@@ -1,6 +1,7 @@
 # Package imports
 import sys
 
+
 def MainQuitController():
 
     print('Exiting. Take care!')

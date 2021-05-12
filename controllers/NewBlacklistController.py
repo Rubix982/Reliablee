@@ -4,6 +4,7 @@ import os
 
 load_dotenv()
 
+
 def MainNewBlacklistController():
     with open(str(os.environ['BLACKLIST_LOCATION']), mode='a') as file:
         new_domain_to_add_to_blacklist = str(

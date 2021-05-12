@@ -1,4 +1,6 @@
 # Package imports
+from src.LRU import lrucache
+from src.LFU import LFUCache
 from socket import error as SocketError
 from dotenv import load_dotenv
 import requests
@@ -14,25 +16,27 @@ import ssl
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Local imports
-from src.LFU import LFUCache
-from src.LRU import lrucache
 
 load_dotenv()
+
 
 def MainServerController():
 
     Proxy()
 
+
 def Proxy():
     port_addr = (str(os.environ['HOSTNAME']), int(os.environ['PORT']))
-    LFU_CACHE_SIZE, LRU_CACHE_SIZE = int(os.environ['LFU_CACHE_SIZE']), int(os.environ['LRU_CACHE_SIZE'])
+    LFU_CACHE_SIZE, LRU_CACHE_SIZE = int(
+        os.environ['LFU_CACHE_SIZE']), int(os.environ['LRU_CACHE_SIZE'])
 
     '''
     https://docs.python.org/3.6/library/ssl.html#ssl.Purpose.CLIENT_AUTH
     Purpose.CLIENT_AUTH loads CA certificates for client certificate verification on the server side.
     '''
     context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-    context.load_cert_chain(certfile=str(os.environ['CERT_FILE']), keyfile=str(os.environ['KEY_FILE']))
+    context.load_cert_chain(certfile=str(
+        os.environ['CERT_FILE']), keyfile=str(os.environ['KEY_FILE']))
 
     # Create a server socket, bind it to a port and start listening
     tcpSerSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -56,9 +60,10 @@ def Proxy():
 
         # Throws HTTPS_PROXY_REQUEST error. I can't figure out why
         # tcpCliSock = context.wrap_socket(tcpCliSock)
-        
+
         print('Received a connection from:', addr)
-        message = tcpCliSock.recv(int(os.environ['BYTE_SIZE'])).decode('utf-8', 'ignore')
+        message = tcpCliSock.recv(
+            int(os.environ['BYTE_SIZE'])).decode('utf-8', 'ignore')
 
         if len(message.split(' ')) > 0:
             if message.split(' ')[1] == 'http://detectportal.firefox.com/success.txt' or message.split(' ')[1] == 'incoming.telemetry.mozilla.org:443':
@@ -97,6 +102,7 @@ def Proxy():
             continue
     tcpSerSock.shutdown(socket.SHUT_RDWR)
     tcpCliSock.close()
+
 
 def CachingMechanism():
     lru_cache = lrucache(LRU_CACHE_SIZE)

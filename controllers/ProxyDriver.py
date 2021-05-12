@@ -4,8 +4,9 @@ from controllers.NewBlacklistController import MainNewBlacklistController
 from controllers.RemoveBlacklistController import RemoveBlacklistController
 from controllers.QuitController import MainQuitController
 
-def main():
-    
+
+def ProxyDriver():
+
     while 1:
         option_select = int(input('''
         1. Start server
@@ -24,6 +25,3 @@ def main():
             MainQuitController()
         else:
             print('Unknown selected option. Choose again')
-
-if __name__ == '__main__':
-    main()
