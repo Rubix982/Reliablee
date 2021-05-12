@@ -8,6 +8,7 @@ import threading
 from controllers.ReceiverController import ReceiverServer
 from controllers.SenderController import SenderServer
 
+
 async def Servers():
     format = "%(asctime)s: %(message)s"
     logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
@@ -27,7 +28,7 @@ async def Servers():
     logging.info('Main: Before SenderServer running thread')
 
     thread_2.start()
-    
+
     logging.info('Main: After SenderServer starting thread')
 
-    logging.info('\n-------------\n')    
+    logging.info('\n-------------\n')

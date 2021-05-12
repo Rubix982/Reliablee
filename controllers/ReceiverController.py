@@ -12,13 +12,13 @@ from models.TCPPacket import TCPPacket
 from models.AuxProcessing import AuxProcessing
 
 # take environment variables from .env.
-load_dotenv()  
+load_dotenv()
 
 # Standard loopback interface address (localhost)
-HOST = str(os.environ['HOST']) 
+HOST = str(os.environ['HOST'])
 
 # The port used by the receiver client
-CLIENT_PORT = int(os.environ['SENDER_PORT'])        
+CLIENT_PORT = int(os.environ['SENDER_PORT'])
 
 # Port to listen on (non-privileged ports are > 1023)
 SERVER_PORT = int(os.environ['RECEIVER_PORT'])
@@ -31,6 +31,7 @@ TCPData = None
 
 # Counter for interaction
 counter = 0
+
 
 def ReceiverClient():
 
@@ -50,22 +51,46 @@ def ReceiverClient():
 
                 TCPPkt = TCPPacket().CustomConfig(**json.loads(TCPData[2:-1]))
 
-                print('In Receiver Client', TCPPkt.__dict__)
+                if str(os.environ['RECEIVER_DEBUG']) == 'True':
+                    print('In Receiver Client', TCPPkt.__dict__)
 
-                if TCPPkt.tcp_control_flags['SYN'] == 0x0:
-                    TCPPkt.tcp_control_flags['SYN'] = 0x1
+                # TCP Handshake, 3rd step
+                if TCPPkt.tcp_control_flags['SYN'] == 0x1 and TCPPkt.tcp_control_flags['ACK'] == 0x1:
 
-                if TCPPkt.tcp_control_flags['ACK'] == 0x0:
-                    TCPPkt.tcp_control_flags['ACK'] = 0x1
+                    # TCP Handshake, connection established
+                    TCPPkt.tcp_control_flags['SYN'] = 0x0
 
-                TCPPkt.sequence_number = AuxProcessing.IntegersToBinary(AuxProcessing.BinaryToIntegers(TCPPkt.sequence_number) + AuxProcessing.BinaryToIntegers(TCPPkt.acknowledgement_number))
+                    '''
+                    The receiver should only update the SEQ value
+                    '''
 
-                file.write(f'Counter: {counter} - {TCPPkt.__repr__}\n')
+                    TCPPkt.sequence_number = AuxProcessing.IntegersToBinary(AuxProcessing.BinaryToIntegers(
+                        TCPPkt.sequence_number) + AuxProcessing.BinaryToIntegers(TCPPkt.acknowledgement_number))
+
+                # Connection has already been established and we can now
+                # receive the information that we requested for
+                elif TCPPkt.tcp_control_flags['ACK'] == 0x1:
+
+                    TCPPkt.sequence_number = TCPPkt.acknowledgement_number
+
+                    TCPPkt.acknowledgement_number = AuxProcessing.IntegersToBinary(AuxProcessing.BinaryToIntegers(
+                        TCPPkt.acknowledgement_number) + len(AuxProcessing.BinaryToUTF8(TCPPkt.data)))
+
+                file.write(f'Counter: {counter} - {TCPPkt.__repr__()}\n')
                 counter += 1
 
-                time.sleep(0.75)
+                # The end of the data is reached and the TCP
+                # connection can now be closed
+                if TCPPkt.tcp_control_flags['FIN'] == 0x1:
+
+                    s.close()
+
+                time.sleep(0.25)
 
                 s.sendall(TCPPkt.EncodeObject())
+
+                TCPData = str(b'')
+
 
 def ReceiverServer():
 
