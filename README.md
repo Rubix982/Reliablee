@@ -4,6 +4,12 @@ This repository is an RDT implementation for the purposes of creating a protocol
 
 ## Pipenv
 
+To install `Pipenv`,
+
+```bash
+pip install pipenv
+```
+
 Using `Pipenv`,
 
 ```bash
@@ -28,6 +34,14 @@ Installing a package,
 pipenv install [package_name]
 ```
 
+## Formatting The Repository
+
+To format the repository use `autopep8` ( this comes in the dev of the `Pipfile`), run,
+
+```bash
+autopep8 -r . --in-place
+```
+
 ## To Start
 
 After doing,
@@ -40,7 +54,7 @@ pipenv install --dev // if you would like to do development
 Then just simply run,
 
 ```bash
-python app.py
+pipenv run python app.py
 ```
 
 ## Brainstorming
@@ -111,3 +125,7 @@ The above idea isn't bad, but true multithreading is not possible in Python. It'
 - [Stack Exchange, Network Engineering - Why can't a single port be used for both incoming and outgoing traffic?](https://networkengineering.stackexchange.com/questions/33061/why-cant-a-single-port-be-used-for-both-incoming-and-outgoing-traffic)
 - [RealPython - An Intro to Threading in Python](https://realpython.com/intro-to-python-threading/)
 - [RealPython - Async IO in Python: A Complete Walkthrough](https://realpython.com/async-io-python/)
+- [UTF8.com, UTF-8 and Unicode](https://www.utf8.com/#:~:text=It%20is%20an%20efficient%20encoding,character%20set%20on%20the%20Web.)
+- [StackOverflow, Convert binary to ASCII and vice versa](https://stackoverflow.com/questions/7396849/convert-binary-to-ascii-and-vice-versa)
+- [Pypi, autopep8](https://pypi.org/project/autopep8/)
+- [Pypi, pipenv](https://pypi.org/project/pipenv/)

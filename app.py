@@ -11,6 +11,7 @@ from controllers.ClientDriver import Clients
 
 load_dotenv()
 
+
 def main():
 
     if not os.path.exists('logs'):
@@ -28,6 +29,7 @@ def main():
 
     while True:
         pass
+
 
 if __name__ == '__main__':
     main()
