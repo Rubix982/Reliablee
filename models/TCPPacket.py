@@ -10,15 +10,16 @@ import os
 from models.TCPControlFlags import TCPControlFlags
 from models.AuxProcessing import AuxProcessing
 
-load_dotenv() # take environment variables from .env
+load_dotenv()  # take environment variables from .env
+
 
 class TCPPacket:
 
     def __init__(self, source_port: str = 16 * '0', destination_port: str = 16 * '0',
-    sequence_number: str = 32 * '0', acknowledgement_number: str = 16 * '0', header_length: str = 4 * '0', reserved_bits: str = 6 * '0', tcp_control_flags: TCPControlFlags = TCPControlFlags(), window: str = 16 * '0', checksum: str = 16 * '0', urgent_pointer: str = 16 * '0', optional_headers: dict = {}, data: str = 4 * '0'):
+                 sequence_number: str = 32 * '0', acknowledgement_number: str = 16 * '0', header_length: str = 4 * '0', reserved_bits: str = 6 * '0', tcp_control_flags: TCPControlFlags = TCPControlFlags(), window: str = 16 * '0', checksum: str = 16 * '0', urgent_pointer: str = 16 * '0', optional_headers: dict = {}, data: str = 4 * '0'):
         '''Creates certain key variables for this structure'''
 
-        '''16 Bit number which identifies the Source Port number (Sending Computer's TCP Port).'''        
+        '''16 Bit number which identifies the Source Port number (Sending Computer's TCP Port).'''
         self.source_port = source_port
 
         '''16 Bit number which identifies the Destination Port number (Receiving Port).'''
@@ -26,7 +27,7 @@ class TCPPacket:
 
         '''32 Bit number used for byte level numbering of TCP segments. If you are using TCP, each byte of data is assigned a sequence number. If SYN flag is set (during the initial three way handshake connection initiation), then this is the initial sequence number. The sequence number of the actual first data byte will then be this sequence number plus 1. For example, let the first byte of data by a device in a particular TCP header will have its sequence number in this field 50000. If this packet has 500 bytes of data in it, then the next packet sent by this device will have the sequence number of 50000 + 500 + 1 = 50501.'''
         self.sequence_number = sequence_number
-        
+
         '''32 Bit number field which indicates the next sequence number that the sending device is expecting from the other device.'''
         self.acknowledgement_number = acknowledgement_number
 
@@ -56,22 +57,28 @@ class TCPPacket:
 
     def ClientConfig(self):
         '''Initializes packet with default configuration for the client from the dotenv file'''
-        
+
         '''Cient source port'''
-        self.source_port = AuxProcessing.IntegersToBinary(int(os.environ['SENDER_PORT']))
-        self.source_port = ((16 - len(self.source_port)) * '0') + self.source_port        
+        self.source_port = AuxProcessing.IntegersToBinary(
+            int(os.environ['SENDER_PORT']))
+        self.source_port = ((16 - len(self.source_port))
+                            * '0') + self.source_port
 
         '''Destination port for the TCP Packet from the client - the server'''
-        self.destination_port = AuxProcessing.IntegersToBinary(int(os.environ['RECEIVER_PORT']))
-        self.destination_port = ((16 - len(self.destination_port)) * '0') + self.destination_port
+        self.destination_port = AuxProcessing.IntegersToBinary(
+            int(os.environ['RECEIVER_PORT']))
+        self.destination_port = (
+            (16 - len(self.destination_port)) * '0') + self.destination_port
 
         '''Setting the sequence number to start from 0'''
         self.sequence_number = AuxProcessing.IntegersToBinary(0)
-        self.sequence_number = ((32 - len(self.sequence_number)) * '0') + self.sequence_number
+        self.sequence_number = (
+            (32 - len(self.sequence_number)) * '0') + self.sequence_number
 
         '''Acknowledgement Number'''
         self.acknowledgement_number = AuxProcessing.IntegersToBinary(0)
-        self.acknowledgement_number = ((32 - len(self.acknowledgement_number)) * '0') + self.acknowledgement_number
+        self.acknowledgement_number = (
+            (32 - len(self.acknowledgement_number)) * '0') + self.acknowledgement_number
 
         '''Reserved bits to be set to zero'''
         self.reserved_bits = '000000'
@@ -80,21 +87,26 @@ class TCPPacket:
         self.tcp_control_flags = TCPControlFlags().__dict__
 
         '''Window Size'''
-        self.window = AuxProcessing.IntegersToBinary(int(os.environ['DEFAULT_WINDOW_SIZE']))
-        self.window = ((16 - len(self.window)) * '0') + self.window        
+        self.window = AuxProcessing.IntegersToBinary(
+            int(os.environ['DEFAULT_WINDOW_SIZE']))
+        self.window = ((16 - len(self.window)) * '0') + self.window
 
         '''Checksum value'''
         checksum_left_val = randrange(0, int(os.environ['CHECKSUM_VAL']))
-        checksum_right_val = int(os.environ['CHECKSUM_VAL']) - checksum_left_val
-        self.checksum = AuxProcessing.IntegersToBinary(checksum_left_val) + AuxProcessing.IntegersToBinary(checksum_right_val)
+        checksum_right_val = int(
+            os.environ['CHECKSUM_VAL']) - checksum_left_val
+        self.checksum = AuxProcessing.IntegersToBinary(
+            checksum_left_val) + AuxProcessing.IntegersToBinary(checksum_right_val)
 
         '''Urgent pointer'''
         self.tcp_control_flags['URG'] = 0x0
         self.urgent_pointer = 16 * '0'
 
         '''Header size in word size, each word is 2 bytes ( 16 bits )'''
-        self.header_length = AuxProcessing.IntegersToBinary(int(len(self.source_port + self.destination_port + self.sequence_number + self.acknowledgement_number + self.window + self.checksum) / 4) + len(self.reserved_bits) + len(self.tcp_control_flags))
-        self.header_length = ((16 - len(self.header_length)) * '0') + self.header_length
+        self.header_length = AuxProcessing.IntegersToBinary(int(len(self.source_port + self.destination_port + self.sequence_number +
+                                                            self.acknowledgement_number + self.window + self.checksum) / 4) + len(self.reserved_bits) + len(self.tcp_control_flags))
+        self.header_length = ((16 - len(self.header_length))
+                              * '0') + self.header_length
 
         '''Optional headers'''
         self.optional_headers = {}
@@ -104,28 +116,34 @@ class TCPPacket:
         the moment. The simplest idea is to use pinging
         as a technique to demonstrate how the RDT3.0 is working. So there is no actual data 
         transfer at the moment, only control transfer will be implemented at the moment'''
-        self.data = '0000'
+        self.data = AuxProcessing.UTF8ToBinary('.')
 
         return self
 
     def ServerConfig(self):
         '''Initializes packet with default configuration for the server from the dotenv file'''
-        
+
         '''Cient source port'''
-        self.source_port = AuxProcessing.IntegersToBinary(int(os.environ['RECEIVER_PORT']))
-        self.source_port = ((16 - len(self.source_port)) * '0') + self.source_port
+        self.source_port = AuxProcessing.IntegersToBinary(
+            int(os.environ['RECEIVER_PORT']))
+        self.source_port = ((16 - len(self.source_port))
+                            * '0') + self.source_port
 
         '''Destination port for the TCP Packet from the client - the server'''
-        self.destination_port = AuxProcessing.IntegersToBinary(int(os.environ['SENDER_PORT']))
-        self.destination_port = ((16 - len(self.destination_port)) * '0') + self.destination_port
+        self.destination_port = AuxProcessing.IntegersToBinary(
+            int(os.environ['SENDER_PORT']))
+        self.destination_port = (
+            (16 - len(self.destination_port)) * '0') + self.destination_port
 
         '''Setting the sequence number to start from 0'''
         self.sequence_number = AuxProcessing.IntegersToBinary(0)
-        self.sequence_number = ((32 - len(self.sequence_number)) * '0') + self.sequence_number        
+        self.sequence_number = (
+            (32 - len(self.sequence_number)) * '0') + self.sequence_number
 
         '''Acknowledgement Number'''
         self.acknowledgement_number = AuxProcessing.IntegersToBinary(0)
-        self.acknowledgement_number = ((32 - len(self.acknowledgement_number)) * '0') + self.acknowledgement_number        
+        self.acknowledgement_number = (
+            (32 - len(self.acknowledgement_number)) * '0') + self.acknowledgement_number
 
         '''Reserved bits to be set to zero'''
         self.reserved_bits = '000000'
@@ -134,21 +152,26 @@ class TCPPacket:
         self.tcp_control_flags = TCPControlFlags().__dict__
 
         '''Window Size'''
-        self.window = AuxProcessing.IntegersToBinary(int(os.environ['DEFAULT_WINDOW_SIZE']))
+        self.window = AuxProcessing.IntegersToBinary(
+            int(os.environ['DEFAULT_WINDOW_SIZE']))
         self.window = ((16 - len(self.window)) * '0') + self.window
 
         '''Checksum value'''
         checksum_left_val = randrange(0, int(os.environ['CHECKSUM_VAL']))
-        checksum_right_val = int(os.environ['CHECKSUM_VAL']) - checksum_left_val
-        self.checksum = AuxProcessing.IntegersToBinary(checksum_left_val) + AuxProcessing.IntegersToBinary(checksum_right_val)
+        checksum_right_val = int(
+            os.environ['CHECKSUM_VAL']) - checksum_left_val
+        self.checksum = AuxProcessing.IntegersToBinary(
+            checksum_left_val) + AuxProcessing.IntegersToBinary(checksum_right_val)
 
         '''Urgent pointer'''
         self.tcp_control_flags['URG'] = 0x0
         self.urgent_pointer = 16 * '0'
 
         '''Header size in word size, each word is 2 bytes ( 16 bits )'''
-        self.header_length = AuxProcessing.IntegersToBinary(int(len(self.source_port + self.destination_port + self.sequence_number + self.acknowledgement_number + self.window + self.checksum) / 4) + len(self.reserved_bits) + len(self.tcp_control_flags))
-        self.header_length = ((16 - len(self.header_length)) * '0') + self.header_length
+        self.header_length = AuxProcessing.IntegersToBinary(int(len(self.source_port + self.destination_port + self.sequence_number +
+                                                            self.acknowledgement_number + self.window + self.checksum) / 4) + len(self.reserved_bits) + len(self.tcp_control_flags))
+        self.header_length = ((16 - len(self.header_length))
+                              * '0') + self.header_length
 
         '''Optional headers'''
         self.optional_headers = {}
@@ -158,13 +181,13 @@ class TCPPacket:
         the moment. The simplest idea is to use pinging
         as a technique to demonstrate how the RDT3.0 is working. So there is no actual data 
         transfer at the moment, only control transfer will be implemented at the moment'''
-        self.data = '0000'
+        self.data = AuxProcessing.UTF8ToBinary('.')
 
         return self
 
     def CustomConfig(self, **kwargs):
         '''Initializes packet with default configuration for the client from the dotenv file'''
-        
+
         '''Cient source port'''
         self.source_port = kwargs['source_port']
 
@@ -184,7 +207,7 @@ class TCPPacket:
         self.tcp_control_flags = kwargs['tcp_control_flags']
 
         '''Window Size'''
-        self.window = kwargs['window']      
+        self.window = kwargs['window']
 
         '''Checksum value'''
         self.checksum = kwargs['checksum']
@@ -205,7 +228,7 @@ class TCPPacket:
         transfer at the moment, only control transfer will be implemented at the moment'''
         self.data = kwargs['data']
 
-        return self        
+        return self
 
     def ConvertToBinary(self):
 
@@ -225,8 +248,8 @@ class TCPPacket:
         return binRepresentation
 
     def EncodeObject(self):
-        
+
         return json.dumps(self.__dict__).encode('UTF-8')
 
     def __repr__(self):
-        return f"Source: {AuxProcessing.BinaryToIntegers(self.source_port)}, Destination: {AuxProcessing.BinaryToIntegers(self.destination_port)}, Sequence: {AuxProcessing.BinaryToIntegers(self.sequence_number)}, Acknowledgement: {AuxProcessing.BinaryToIntegers(self.acknowledgement_number)}, TCP Control Flags: {self.tcp_control_flags}, Checksum: {AuxProcessing.BinaryToIntegers(self.checksum)}, Optional Headers: {self.optional_headers}, Data: {AuxProcessing.BinaryToIntegers(self.data)}"
+        return f"Source: {AuxProcessing.BinaryToIntegers(self.source_port)}, Destination: {AuxProcessing.BinaryToIntegers(self.destination_port)}, Sequence: {AuxProcessing.BinaryToIntegers(self.sequence_number)}, Acknowledgement: {AuxProcessing.BinaryToIntegers(self.acknowledgement_number)}, TCP Control Flags: {self.tcp_control_flags}, Checksum: {AuxProcessing.BinaryToIntegers(self.checksum)}, Optional Headers: {self.optional_headers}, Data: {AuxProcessing.BinaryToUTF8(self.data)}"
