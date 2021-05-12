@@ -2,6 +2,7 @@
 
 # Package imports
 from dotenv import load_dotenv
+import random
 import socket
 import time
 import json
@@ -51,6 +52,8 @@ def ReceiverClient():
 
                 TCPPkt = TCPPacket().CustomConfig(**json.loads(TCPData[2:-1]))
 
+                print(f'[RECEIVER] Received from Sender at {time.process_time()}')
+
                 if str(os.environ['RECEIVER_DEBUG']) == 'True':
                     print('In Receiver Client', TCPPkt.__dict__)
 
@@ -85,7 +88,7 @@ def ReceiverClient():
 
                     s.close()
 
-                time.sleep(0.25)
+                time.sleep(random.uniform(0.1, 6.75))
 
                 s.sendall(TCPPkt.EncodeObject())
 

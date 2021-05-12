@@ -2,6 +2,7 @@
 
 # Package imports
 from dotenv import load_dotenv
+import random
 import socket
 import time
 import json
@@ -26,8 +27,11 @@ SERVER_PORT = int(os.environ['SENDER_PORT'])
 # Information to receive
 BYTES_TO_RECEIVE = int(os.environ['BYTES_TO_RECEIVE'])
 
-# Global data variable
+# Global TCP Data coverage
 TCPData = None
+
+# Global TCP PKT coverage
+TCPPkt = None
 
 # Counter for interaction
 counter = 0
@@ -38,10 +42,12 @@ data = ''
 # Data index
 data_index = 0
 
+# Timer Conf
+TimerStarter = time.process_time()
 
 def SenderClient():
 
-    global TCPData, counter, data, data_index
+    global TCPData, TCPPkt, counter, data, data_index, TimerStarter
 
     with open(str(os.environ['DATA_TO_SEND']), mode='r') as file:
         data = file.read()
@@ -51,10 +57,19 @@ def SenderClient():
             s.connect((HOST, CLIENT_PORT))
 
             while True:
+
+                if (time.process_time() - TimerStarter) >= float(os.environ['FIXED_TIMEOUT_DELAY']):
+                    print(f'[SENDER] Request timed out at {time.process_time()}')
+                    s.sendall(TCPPkt.EncodeObject())
+                    TimerStarter = time.process_time()
+                    continue
+
                 if TCPData == str(b'') or TCPData == None:
                     continue
 
                 TCPPkt = TCPPacket().CustomConfig(**json.loads(TCPData[2:-1]))
+
+                print(f'[SENDER] Received at Sender at {time.process_time()}')
 
                 if str(os.environ['SENDER_DEBUG']) == 'True':
                     print('In Sender Client', TCPPkt.__dict__)
@@ -105,9 +120,10 @@ def SenderClient():
                 file.write(f'Counter: {counter} - {TCPPkt.__repr__()}\n')
                 counter += 1
 
-                time.sleep(0.25)
+                time.sleep(random.uniform(0.25, 0.5))
 
                 s.sendall(TCPPkt.EncodeObject())
+                TimerStarter = time.process_time()
 
                 TCPData = str(b'')
 
