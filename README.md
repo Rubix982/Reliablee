@@ -34,6 +34,20 @@ Installing a package,
 pipenv install [package_name]
 ```
 
+## OpenSSL
+
+Generating new self signed certificates,
+
+```bash
+openssl req -new -x509 -days 365 -nodes -out certificate.pem -keyout private_key.pem
+```
+
+## HTTP websites
+
+A list of websites that still use HTTP can be found at `./data/http.txt`. These are mentioned here for demonstration purposes.
+
+I could not get the HTTPS to be configured. Further research needed.
+
 ## Formatting The Repository
 
 To format the repository use `autopep8` ( this comes in the dev of the `Pipfile`), run,
@@ -56,6 +70,18 @@ Then just simply run,
 ```bash
 pipenv run python app.py
 ```
+
+## Progress
+
+'Cause you should make yourself feel better from time to time, no buts.
+
+- [ ] Reliable Data Transfer [####################..............................]
+- [ ] TCP Pipelinig [..................................................]
+- [X] Sequence And Acknowledgement will be based on number of bytes transfered [##################################################]
+- [ ] Fast Retransmit Functionality [..................................................]
+- [ ] Proxy Server Configuration [##########..........................................]
+
+*Note:* Each **#** is 5%
 
 ## Brainstorming
 
@@ -113,6 +139,8 @@ The above idea isn't bad, but true multithreading is not possible in Python. It'
 >
 > Because of the way CPython implementation of Python works, threading may not speed up all tasks. This is due to interactions with the GIL that essentially limit one Python thread to run at a time." - [RealPython - An Intro to Threading in Python](https://realpython.com/intro-to-python-threading/)
 
+### RDT3.0 Data Loss
+
 ## Reference
 
 - [OmniSecu - Transmission Control Protocol (TCP) Segment Header, Transmission Control Protocol, TCP Header Fields](https://www.omnisecu.com/tcpip/tcp-header.php)
@@ -129,3 +157,5 @@ The above idea isn't bad, but true multithreading is not possible in Python. It'
 - [StackOverflow, Convert binary to ASCII and vice versa](https://stackoverflow.com/questions/7396849/convert-binary-to-ascii-and-vice-versa)
 - [Pypi, autopep8](https://pypi.org/project/autopep8/)
 - [Pypi, pipenv](https://pypi.org/project/pipenv/)
+- [Docs Python, OpenSSL - Self-signed Certificates](https://docs.python.org/3.6/library/ssl.html#self-signed-certificates)
+- [WhyNoHTTPS](https://whynohttps.com/)
