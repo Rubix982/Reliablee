@@ -155,6 +155,50 @@ For the multipipelined approach to handling data loss, consider the `5.png`, `6.
       1. Two participants, but the catch 22 is that the receiver has no mechanism that says they should receive a packet within this time duration, thus all that in done in this scenario is again at the `Sender's` end, which is just resending the *pkt* if no *ACK* has been received for the last packet sent in a certain time duration
    4. Premature Timeout/Delayed ACK
       1. This needs an algorithm implementation. Time to study more.
+      2. Okay so this can solved easily with the GoBackN algorithm
+
+### Go-Back-N Algorithm
+
+A Go-Back-N algorithm can be implemented with a Queue with a fixed size. We don't have to preallocate an entirely gigantic buffer. As a benefit of that, a queue can grow/shrink depending on the influx of traffic.
+
+It's not practical to create a Go-Back-N buffer for each dedicated TCP. But if you create 1 Go-Back-N instance, and share it with all the clients sending requests to your server, it should be enough.
+
+Also, a Go-Back-N will act on the client's side, not the server's side.
+
+The next question is about what the individual entries of the Go-Back-N Algorithm will represent.
+
+Its components consist of,
+
+- A sender component
+- A receiver component
+
+For the sender component,
+
+- A window size of length **N**
+  - Window is of upto N, consecutive transmitted but unACKed pkts
+  - k-bit seq# in pkt heaer
+- A SendBase pointer, for the head of the queue
+- A NextSeqNum pointer, for the first entry of 'usable, not yet sent'
+- 4 different states,
+  - Already ack'ed
+  - Sent, not yet ack'ed
+  - Usable, not yet sent
+  - Not usable
+- Timer for oldest in-flight packet
+- Timeout(n): Retransmit packet n and all higher seq # packets in window
+
+For the receiver component,
+
+- ACK-only, always send ACK for correctly-received packet so far, with the highest in-order seq #
+  - May generate duplcate ACKs
+  - Need only remember rcv_base
+- On receipt of out-of-order packet
+  - Can discard (don't buffer) or buffer: an implementation decision
+  - re-ACK pkt with highest in-order seq #
+- Receiver view of sequence number space consists of the following states,
+  - Received and ACKed
+  - Out-of-order: Received but not ACKed
+  - Not received
 
 ## Reference
 

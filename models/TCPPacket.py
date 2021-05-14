@@ -104,7 +104,7 @@ class TCPPacket:
 
         '''Header size in word size, each word is 2 bytes ( 16 bits )'''
         self.header_length = AuxProcessing.IntegersToBinary(int(len(self.source_port + self.destination_port + self.sequence_number +
-                                                            self.acknowledgement_number + self.window + self.checksum) / 4) + len(self.reserved_bits) + len(self.tcp_control_flags))
+                                                                    self.acknowledgement_number + self.window + self.checksum) / 4) + len(self.reserved_bits) + len(self.tcp_control_flags))
         self.header_length = ((16 - len(self.header_length))
                               * '0') + self.header_length
 
@@ -169,7 +169,7 @@ class TCPPacket:
 
         '''Header size in word size, each word is 2 bytes ( 16 bits )'''
         self.header_length = AuxProcessing.IntegersToBinary(int(len(self.source_port + self.destination_port + self.sequence_number +
-                                                            self.acknowledgement_number + self.window + self.checksum) / 4) + len(self.reserved_bits) + len(self.tcp_control_flags))
+                                                                    self.acknowledgement_number + self.window + self.checksum) / 4) + len(self.reserved_bits) + len(self.tcp_control_flags))
         self.header_length = ((16 - len(self.header_length))
                               * '0') + self.header_length
 

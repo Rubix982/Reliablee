@@ -18,10 +18,10 @@ def main():
 
         os.makedirs('logs')
 
-        with open(str(os.environ['RECEIVER_LOG_FILENAME']), encoding='UTF-8', mode='w') as file:
-            pass
-
-        with open(str(os.environ['SENDER_LOG_FILENAME']), encoding='UTF-8', mode='w') as file:
+        with open(str(os.environ['RECEIVER_LOG_FILENAME']), encoding='UTF-8', mode='w') as ReceiverPKTLog, \
+            open(str(os.environ['SENDER_LOG_FILENAME']), encoding='UTF-8', mode='w') as SenderPKTLog, \
+                open(str(os.environ['RECEIVER_LOG_LOGGER']), encoding='UTF-8', mode='w') as ReceiverStreamLogger, \
+        open(str(os.environ['SENDER_LOG_LOGGER']), encoding='UTF-8', mode='w') as SenderStreamLogger:
             pass
 
     asyncio.run(Servers())
