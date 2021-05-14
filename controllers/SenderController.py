@@ -169,15 +169,7 @@ def SenderClient():
                                 TCPPkt.data = AuxProcessing.UTF8ToBinary(
                                     window_selected)
 
-                        time.sleep(random.uniform(0.01, 0.2))
-
-                        chance = random.uniform(0.65, 0.75)
-
-                        # Trying to invoke the GoBackN algorithm
-                        # if chance >= 0.65 and chance <= 0.75:
-                        #     TCPPkt.acknowledgement_number = AuxProcessing.IntegersToBinary(AuxProcessing.BinaryToIntegers(TCPPkt.acknowledgement_number) + random.randrange(5, 20))
-                        # else:
-                        #     TCPPkt.acknowledgement_number = AuxProcessing.IntegersToBinary(AuxProcessing.BinaryToIntegers(TCPPkt.acknowledgement_number) + 1)
+                        time.sleep(random.uniform(0.2, 0.5))
 
                         PKTLogger.write(
                             f'[SENDING - {time.process_time()}] Counter: {counter} - {TCPPkt.__repr__()}\n{GoBackN.__repr__()}\n\n')

@@ -37,6 +37,8 @@ counter = 0
 # Go Back N Receiver Client
 GoBackN = GoBackNReceiver()
 
+# Data received
+dataReceived = open(str(os.environ['MISC']), encoding='utf-8', mode='w')
 
 def ReceiverClient():
 
@@ -61,6 +63,8 @@ def ReceiverClient():
                     PKTLogger.write(
                         f'[RECEIVED - {time.process_time()}] Counter: {counter} - {TCPPkt.__repr__()}\n{GoBackN.__repr__()}\n\n')
                     counter += 1
+
+                    dataReceived.write(AuxProcessing.BinaryToUTF8(TCPPkt.data))
 
                     print(
                         f'[RECEIVER - {time.process_time()}] Received from Sender')
@@ -94,6 +98,8 @@ def ReceiverClient():
                             TCPPkt.sequence_number = AuxProcessing.IntegersToBinary(AuxProcessing.BinaryToIntegers(
                                 TCPPkt.sequence_number) + len(AuxProcessing.BinaryToUTF8(TCPPkt.data)))
 
+                        elif TCPPkt.acknowledgement_number == TCPPkt.sequence_number:
+                            TCPPkt.sequence_number = AuxProcessing.IntegersToBinary(AuxProcessing.BinaryToIntegers(TCPPkt.sequence_number) + int(os.environ['DEFAULT_WINDOW_SIZE']))
                         else:
 
                             TCPPkt.acknowledgement_number = AuxProcessing.IntegersToBinary(
@@ -109,6 +115,7 @@ def ReceiverClient():
 
                         s.close()
                         PKTLogger.close()
+                        dataReceived.close()
                         return
 
                     else:
