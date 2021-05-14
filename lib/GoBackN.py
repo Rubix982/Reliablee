@@ -1,8 +1,16 @@
 #!/usr/bin/env python3
 
 # Package imports
+from dotenv import load_dotenv
 from enum import Enum
+import os
 
+# Local imports
+from models.TCPPacket import TCPPacket
+from models.AuxProcessing import AuxProcessing
+
+# Loads .env file
+load_dotenv()
 
 class SenderWindow(Enum):
     SENT = 1
@@ -12,13 +20,30 @@ class SenderWindow(Enum):
 class GoBackNReceiver:
 
     def __init__(self):
+
+        # This represents the acknowledgement number
+        # that the receiver expects from the sender
         self.rcv_base = 0
+        self.firstPKT = True
 
-    def ReceiveACK(self, ACK: int):
-        return self.rcv_base == ACK
+    def ReceiveACK(self, TCPPkt: TCPPacket):
 
-    def UpdateReceiveBase(self, ACK: int):
-        self.rcv_base = ACK
+        if self.firstPKT:
+            self.firstPKT = False
+            self.rcv_base = 1
+
+        elif self.rcv_base + int(os.environ['DEFAULT_WINDOW_SIZE']) == AuxProcessing.BinaryToIntegers(TCPPkt.acknowledgement_number):
+            self.UpdateReceiveBase()
+            return True
+        
+        else:
+            return False
+
+    def UpdateReceiveBase(self):
+        self.rcv_base += int(os.environ['DEFAULT_WINDOW_SIZE'])
+
+    def __repr__(self):
+        return f"RCV_Base: {self.rcv_base}"
 
 
 class GoBackNSender:
@@ -72,3 +97,6 @@ class GoBackNSender:
 
         # Return True
         return True
+
+    def __repr__(self):
+        return f'Size: {self.size}, Window: {self.window}, PTRNextSeqNum: {self.ptrNextSeq}'

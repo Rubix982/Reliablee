@@ -91,6 +91,10 @@ def SenderClient():
                         TCPPkt = TCPPacket().CustomConfig(
                             **json.loads(TCPData[2:-1]))
 
+                        PKTLogger.write(
+                            f'[RECEIVED] Counter: {counter} - {TCPPkt.__repr__()}\n')
+                        counter += 1
+
                         print(
                             f'[SENDER] Received at Sender at {time.process_time()}')
 
@@ -105,8 +109,8 @@ def SenderClient():
                             TCPPkt.tcp_control_flags['ACK'] = 0x1
 
                             # The sender should only update the ACK value
-                            TCPPkt.acknowledgement_number = AuxProcessing.IntegersToBinary(AuxProcessing.BinaryToIntegers(
-                                TCPPkt.acknowledgement_number) + AuxProcessing.BinaryToIntegers(TCPPkt.sequence_number) + 1)
+                            TCPPkt.sequence_number = AuxProcessing.IntegersToBinary(AuxProcessing.BinaryToIntegers(
+                                TCPPkt.sequence_number) + AuxProcessing.BinaryToIntegers(TCPPkt.acknowledgement_number) + 1)
 
                         # The connection has already been established
                         elif TCPPkt.tcp_control_flags['ACK'] == 0x1:
@@ -115,7 +119,7 @@ def SenderClient():
                             if data_index + int(os.environ['DEFAULT_WINDOW_SIZE']) >= len(data):
 
                                 window_selected = data[data_index: data_index +
-                                                    (len(data) - data_index)]
+                                                       (len(data) - data_index)]
 
                                 # Set the FIN bit to 1
                                 TCPPkt.tcp_control_flags['FIN'] = 0x1
@@ -129,14 +133,14 @@ def SenderClient():
                             else:
 
                                 window_selected = data[data_index: data_index +
-                                                    int(os.environ['DEFAULT_WINDOW_SIZE'])]
+                                                       int(os.environ['DEFAULT_WINDOW_SIZE'])]
 
                             __temp_store = TCPPkt.acknowledgement_number
 
-                            TCPPkt.acknowledgement_number = AuxProcessing.IntegersToBinary(
-                                AuxProcessing.BinaryToIntegers(TCPPkt.sequence_number) + len(window_selected))
+                            TCPPkt.sequence_number = AuxProcessing.IntegersToBinary(
+                                AuxProcessing.BinaryToIntegers(TCPPkt.acknowledgement_number) + len(window_selected))
 
-                            TCPPkt.sequence_number = __temp_store
+                            TCPPkt.acknowledgement_number = __temp_store
 
                             data_index = data_index + \
                                 int(os.environ['DEFAULT_WINDOW_SIZE']) + 1
@@ -144,11 +148,17 @@ def SenderClient():
                             TCPPkt.data = AuxProcessing.UTF8ToBinary(
                                 window_selected)
 
-                        PKTLogger.write(
-                            f'Counter: {counter} - {TCPPkt.__repr__()}\n')
-                        counter += 1
-
                         time.sleep(random.uniform(0.25, 0.5))
+
+                        chance = random.uniform(0.5, 0.75)
+
+                        # Trying to invoke the GoBackN algorithm
+                        if chance >= 0.5 and chance <= 0.75:
+                            TCPPkt.acknowledgement_number = AuxProcessing.IntegersToBinary(AuxProcessing.BinaryToIntegers(TCPPkt.acknowledgement_number) + random.randrange(5, 20))
+
+                        PKTLogger.write(
+                            f'[SENDING] Counter: {counter} - {TCPPkt.__repr__()}\n')
+                        counter += 1
 
                         s.sendall(TCPPkt.EncodeObject())
                         TimerStarter = time.process_time()

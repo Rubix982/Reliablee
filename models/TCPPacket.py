@@ -251,5 +251,5 @@ class TCPPacket:
 
         return json.dumps(self.__dict__).encode('UTF-8')
 
-    def __repr__(self):
-        return f"Source: {AuxProcessing.BinaryToIntegers(self.source_port)}, Destination: {AuxProcessing.BinaryToIntegers(self.destination_port)}, Sequence: {AuxProcessing.BinaryToIntegers(self.sequence_number)}, Acknowledgement: {AuxProcessing.BinaryToIntegers(self.acknowledgement_number)}, TCP Control Flags: {self.tcp_control_flags}, Checksum: {AuxProcessing.BinaryToIntegers(self.checksum)}, Optional Headers: {self.optional_headers}, Data: {AuxProcessing.BinaryToUTF8(self.data)}"
+    def __repr__(self, isData: bool = False):
+        return f"Source: {AuxProcessing.BinaryToIntegers(self.source_port)}, Destination: {AuxProcessing.BinaryToIntegers(self.destination_port)}, Sequence: {AuxProcessing.BinaryToIntegers(self.sequence_number)}, Acknowledgement: {AuxProcessing.BinaryToIntegers(self.acknowledgement_number)}, TCP Control Flags: {self.tcp_control_flags}, Checksum: {AuxProcessing.BinaryToIntegers(self.checksum)}, Optional Headers: {self.optional_headers} { f', Data: {AuxProcessing.BinaryToUTF8(self.data)}' if isData else ''}"

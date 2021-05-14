@@ -40,7 +40,7 @@ GoBackN = GoBackNReceiver()
 
 def ReceiverClient():
 
-    global TCPData, counter
+    global TCPData, counter, GoBackN
 
     try:
         with open(str(os.environ['RECEIVER_LOG_FILENAME']), encoding='utf-8', mode='w') as PKTLogger:
@@ -55,7 +55,12 @@ def ReceiverClient():
                     if TCPData == str(b'') or TCPData == None:
                         continue
 
-                    TCPPkt = TCPPacket().CustomConfig(**json.loads(TCPData[2:-1]))
+                    TCPPkt = TCPPacket().CustomConfig(
+                        **json.loads(TCPData[2:-1]))
+
+                    PKTLogger.write(
+                        f'[RECEIVED] Counter: {counter} - {TCPPkt.__repr__()}, {GoBackN.__repr__()}\n')
+                    counter += 1
 
                     print(
                         f'[RECEIVER] Received from Sender at {time.process_time()}')
@@ -64,7 +69,9 @@ def ReceiverClient():
                         print('In Receiver Client', TCPPkt.__dict__)
 
                     # TCP Handshake, 3rd step
-                    if TCPPkt.tcp_control_flags['SYN'] == 0x1 and TCPPkt.tcp_control_flags['ACK'] == 0x1:
+                    if TCPPkt.tcp_control_flags['SYN'] == 0x1 and \
+                            TCPPkt.tcp_control_flags['ACK'] == 0x1 and \
+                            GoBackN.ReceiveACK(TCPPkt):
 
                         # TCP Handshake, connection established
                         TCPPkt.tcp_control_flags['SYN'] = 0x0
@@ -73,28 +80,43 @@ def ReceiverClient():
                         The receiver should only update the SEQ value
                         '''
 
-                        TCPPkt.sequence_number = AuxProcessing.IntegersToBinary(AuxProcessing.BinaryToIntegers(
-                            TCPPkt.sequence_number) + AuxProcessing.BinaryToIntegers(TCPPkt.acknowledgement_number))
+                        TCPPkt.acknowledgement_number = AuxProcessing.IntegersToBinary(AuxProcessing.BinaryToIntegers(
+                            TCPPkt.acknowledgement_number) + AuxProcessing.BinaryToIntegers(TCPPkt.sequence_number))
 
                     # Connection has already been established and we can now
                     # receive the information that we requested for
                     elif TCPPkt.tcp_control_flags['ACK'] == 0x1:
 
-                        TCPPkt.sequence_number = TCPPkt.acknowledgement_number
+                        if GoBackN.ReceiveACK(TCPPkt):
 
-                        TCPPkt.acknowledgement_number = AuxProcessing.IntegersToBinary(AuxProcessing.BinaryToIntegers(
-                            TCPPkt.acknowledgement_number) + len(AuxProcessing.BinaryToUTF8(TCPPkt.data)))
+                            TCPPkt.acknowledgement_number = TCPPkt.sequence_number
 
-                    PKTLogger.write(f'Counter: {counter} - {TCPPkt.__repr__()}\n')
-                    counter += 1
+                            TCPPkt.sequence_number = AuxProcessing.IntegersToBinary(AuxProcessing.BinaryToIntegers(
+                                TCPPkt.sequence_number) + len(AuxProcessing.BinaryToUTF8(TCPPkt.data)))
+
+                        else:
+
+                            TCPPkt.acknowledgement_number = AuxProcessing.IntegersToBinary(GoBackN.rcv_base)
 
                     # The end of the data is reached and the TCP
                     # connection can now be closed
-                    if TCPPkt.tcp_control_flags['FIN'] == 0x1:
+                    elif TCPPkt.tcp_control_flags['FIN'] == 0x1:
+
+                        PKTLogger.write(
+                        f'[SENDING] Counter: {counter} - {TCPPkt.__repr__()}, {GoBackN.__repr__()}\n')
+                        counter += 1
 
                         s.close()
-                        # PKTLogger.close()
+                        PKTLogger.close()
                         return
+
+                    else:
+
+                        raise Exception('Invalid TCP Packet Configuration')
+
+                    PKTLogger.write(
+                        f'[SENDING] Counter: {counter} - {TCPPkt.__repr__()}, {GoBackN.__repr__()}\n')
+                    counter += 1
 
                     time.sleep(random.uniform(0.1, 6.75))
 
@@ -104,6 +126,7 @@ def ReceiverClient():
 
     except IOError as err:
         print("I/O error({0}): {1}".format(err.errno, err.strerror))
+
 
 def ReceiverServer():
 
