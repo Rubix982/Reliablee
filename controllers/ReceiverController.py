@@ -59,11 +59,11 @@ def ReceiverClient():
                         **json.loads(TCPData[2:-1]))
 
                     PKTLogger.write(
-                        f'[RECEIVED] Counter: {counter} - {TCPPkt.__repr__()}, {GoBackN.__repr__()}\n')
+                        f'[RECEIVED - {time.process_time()}] Counter: {counter} - {TCPPkt.__repr__()}\n{GoBackN.__repr__()}\n\n')
                     counter += 1
 
                     print(
-                        f'[RECEIVER] Received from Sender at {time.process_time()}')
+                        f'[RECEIVER - {time.process_time()}] Received from Sender')
 
                     if str(os.environ['RECEIVER_DEBUG']) == 'True':
                         print('In Receiver Client', TCPPkt.__dict__)
@@ -96,14 +96,15 @@ def ReceiverClient():
 
                         else:
 
-                            TCPPkt.acknowledgement_number = AuxProcessing.IntegersToBinary(GoBackN.rcv_base)
+                            TCPPkt.acknowledgement_number = AuxProcessing.IntegersToBinary(
+                                GoBackN.rcv_base)
 
                     # The end of the data is reached and the TCP
                     # connection can now be closed
                     elif TCPPkt.tcp_control_flags['FIN'] == 0x1:
 
                         PKTLogger.write(
-                        f'[SENDING] Counter: {counter} - {TCPPkt.__repr__()}, {GoBackN.__repr__()}\n')
+                            f'[SENDING - {time.process_time()}] Counter: {counter} - {TCPPkt.__repr__()}\n{GoBackN.__repr__()}\n\n')
                         counter += 1
 
                         s.close()
@@ -115,7 +116,7 @@ def ReceiverClient():
                         raise Exception('Invalid TCP Packet Configuration')
 
                     PKTLogger.write(
-                        f'[SENDING] Counter: {counter} - {TCPPkt.__repr__()}, {GoBackN.__repr__()}\n')
+                        f'[SENDING - {time.process_time()}] Counter: {counter} - {TCPPkt.__repr__()}\n{GoBackN.__repr__()}\n\n')
                     counter += 1
 
                     time.sleep(random.uniform(0.1, 6.75))

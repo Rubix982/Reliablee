@@ -12,9 +12,11 @@ from models.AuxProcessing import AuxProcessing
 # Loads .env file
 load_dotenv()
 
+
 class SenderWindow(Enum):
     SENT = 1
     USABLE = 2
+    ACK = 3
 
 
 class GoBackNReceiver:
@@ -32,10 +34,10 @@ class GoBackNReceiver:
             self.firstPKT = False
             self.rcv_base = 1
 
-        elif self.rcv_base + int(os.environ['DEFAULT_WINDOW_SIZE']) == AuxProcessing.BinaryToIntegers(TCPPkt.acknowledgement_number):
+        elif self.rcv_base + int(os.environ['DEFAULT_WINDOW_SIZE']) == AuxProcessing.BinaryToIntegers(TCPPkt.sequence_number):
             self.UpdateReceiveBase()
             return True
-        
+
         else:
             return False
 
@@ -53,7 +55,7 @@ class GoBackNSender:
         self.window = window
         self.ptrNextSeqNum = -1
 
-    def InsertSent(self, ACK: int, COLOR: int):
+    def InsertEntry(self, ACK: int, COLOR: int):
 
         if len(self.window) + 1 > self.size:
             raise Exception('Size limit reached for GBN-Sender')
@@ -68,22 +70,29 @@ class GoBackNSender:
             self.window.insert(self.ptrNextSeq, {
                                'ACK': ACK, 'COLOR': COLOR, 'COUNT': 0})
 
-    def ReceiveACK(self, ACK: int):
+    def ReceiveACK(self, TCP: TCPPacket):
+
+        # SEQ = AuxProcessing.BinaryToIntegers(TCP.sequence_number)
+        SEQ = AuxProcessing.BinaryToIntegers(TCP.acknowledgement_number)
 
         if len(self.window) == 0:
             raise Exception('Window is of size zero')
 
-        if self.window[0].ACK == ACK:
+        if self.window[0]['ACK'] == SEQ:
             self.window.pop(0)
+            self.ptrNextSeqNum -= 1
             return True
 
         for entry in self.window:
-            if entry.ACK == ACK:
-                entry.COUNT += 1
+            if entry['ACK'] == SEQ:
+                entry['COUNT'] += 1
 
         return False
 
     def SendPkt(self):
+
+        if len(self.window) == 0 and self.ptrNextSeqNum == 0:
+            return
 
         if self.ptrNextSeqNum > len(self.window):
             # No packets left to send
@@ -99,4 +108,11 @@ class GoBackNSender:
         return True
 
     def __repr__(self):
-        return f'Size: {self.size}, Window: {self.window}, PTRNextSeqNum: {self.ptrNextSeq}'
+        return f'Size: {self.size}, Window: {self.window}, PTRNextSeqNum: {self.ptrNextSeqNum}'
+
+    def __str__(self):
+        entries = []
+        for entry in self.window:
+            entries.append(entry)
+
+        return entries
