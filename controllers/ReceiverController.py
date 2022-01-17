@@ -126,7 +126,7 @@ def ReceiverClient():
                         f'[SENDING - {time.process_time()}] Counter: {counter} - {TCPPkt.__repr__()}\n{GoBackN.__repr__()}\n\n')
                     counter += 1
 
-                    time.sleep(random.uniform(0.1, 6.75))
+                    time.sleep(random.uniform(0.1, 0.8))
 
                     s.sendall(TCPPkt.EncodeObject())
 

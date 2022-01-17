@@ -1,6 +1,8 @@
 # Reliablee
 
-This repository is an RDT implementation for the purposes of creating a protocol over TCP that, (a) does TCP pipelining at sender and receiver where multiple packet are in flight, (b) Sequence and acknowledgement numbers will be based on number of bytes transferred, (c) Fast re-transmit functionality
+This repository is an RDT implementation for the purposes of creating a protocol over TCP that, (a) does TCP pipelining at sender and receiver where multiple packet are in flight, (b) Sequence and acknowledgement numbers will be based on number of bytes transferred, (c) Fast re-transmit functionality.
+
+Some aspects are still partially incomplete as requirements were changed in the latter phase of the assignment.
 
 ## Pipenv
 
@@ -10,43 +12,17 @@ To install `Pipenv`,
 pip install pipenv
 ```
 
+Installing the dependencies,
+
+```bash
+pipenv install
+```
+
 Using `Pipenv`,
 
 ```bash
 pipenv shell
 ```
-
-Updating `Pipfile` from a possible `requirements.txt`,
-
-```bash
-pipenv install -r requirements.txt
-```
-
-Updating `Pipfile.lock`,
-
-```bash
-pipenv lock --pre --clear
-```
-
-Installing a package,
-
-```bash
-pipenv install [package_name]
-```
-
-## OpenSSL
-
-Generating new self signed certificates,
-
-```bash
-openssl req -new -x509 -days 365 -nodes -out certificate.pem -keyout private_key.pem
-```
-
-## HTTP websites
-
-A list of websites that still use HTTP can be found at `./data/http.txt`. These are mentioned here for demonstration purposes.
-
-I could not get the HTTPS to be configured. Further research needed.
 
 ## Formatting The Repository
 
@@ -58,14 +34,13 @@ autopep8 -r . --in-place
 
 ## To Start
 
-After doing,
+After doing the setup, you can also run,
 
 ```bash
-pipenv shell && pipenv install
 pipenv install --dev // if you would like to do development
 ```
 
-Then just simply run,
+Now, just run,
 
 ```bash
 pipenv run python app.py
