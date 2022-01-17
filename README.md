@@ -46,18 +46,6 @@ Now, just run,
 pipenv run python app.py
 ```
 
-## Progress
-
-'Cause you should make yourself feel better from time to time, no buts.
-
-- [ ] Reliable Data Transfer [####################..............................]
-- [ ] TCP Pipelinig [..................................................]
-- [X] Sequence And Acknowledgement will be based on number of bytes transfered [##################################################]
-- [ ] Fast Retransmit Functionality [..................................................]
-- [ ] Proxy Server Configuration [##########..........................................]
-
-*Note:* Each **#** is 5%
-
 ## Brainstorming
 
 ### Class Based Representation
@@ -174,6 +162,18 @@ For the receiver component,
   - Received and ACKed
   - Out-of-order: Received but not ACKed
   - Not received
+
+## Images
+
+- ![1](assets/img/1.png)
+- ![2](assets/img/2.png)
+- ![3](assets/img/3.png)
+- ![4](assets/img/4.png)
+- ![5](assets/img/5.png)
+- ![6](assets/img/6.png)
+- ![7](assets/img/7.png)
+- ![8](assets/img/8.png)
+- ![9](assets/img/9.png)
 
 ## Reference
 
